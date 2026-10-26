@@ -4,6 +4,7 @@ import emailjs from '@emailjs/browser';
 import { WA, EMAIL, PHONE, NAME, services, places, cats, gallery } from './data';
 import Hero from './components/Hero';
 import { ServicesSection } from './components/Services';
+import {  MessageCircleMore } from 'lucide-react';
 
 const wa = (t = 'Hello Dove Global Tours, I would like to plan a trip.') => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
 const Img = ({ src, alt, className = '' }) => <img src={src} alt={alt} loading="lazy" className={`bg-gradient-to-br from-brand to-emerald-700 object-cover ${className}`} onError={e => { e.currentTarget.style.opacity = .35 }} />;
@@ -77,7 +78,7 @@ function Home() {
         <section className="bg-sand py-20">
             <div className="max-w-7xl mx-auto px-5">
                 <Head tag="Explore" title="Popular Destinations" />
-                <Places />
+                <Places limit={6} />
                 <div className="text-center mt-10">
                     <Btn to="/destinations">View all destinations</Btn>
                 </div>
@@ -87,17 +88,27 @@ function Home() {
         <CTA /></>
 }
 
-const Places = () => <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {places.map(([n, d, i]) =>
-        <Link to="/contact" key={n} className="group relative rounded-2xl overflow-hidden h-72 shadow-lg">
-            <Img src={'/images/' + i} alt={`${n}, Kenya`} className="w-full h-full group-hover:scale-110 transition duration-500" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-            <div className="absolute bottom-0 p-5 text-white">
-                <h3 className="text-2xl font-bold">{n}</h3>
-                <p className="text-sm text-white/85">{d}</p>
-            </div>
-        </Link>)}
-</div>;
+const Places = ({ limit }) => {
+    const list = limit ? places.slice(0, limit) : places;
+    return (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {list.map(([n, d, i]) =>
+                <Link to="/contact" key={n} className="group relative rounded-2xl overflow-hidden h-72 shadow-lg">
+                    <Img
+                        src={'/images/' + i}
+                        alt={`${n}, Kenya`}
+                        onError={(e) => { e.currentTarget.src = '/images/places/placeholder.webp'; }}
+                        className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                    <div className="absolute bottom-0 p-5 text-white">
+                        <h3 className="text-2xl font-bold">{n}</h3>
+                        <p className="text-sm text-white/85">{d}</p>
+                    </div>
+                </Link>)}
+        </div>
+    );
+};
 const CTA = () => <section className="relative text-white text-center py-20"><div className="absolute inset-0 bg-brand" /><div className="relative max-w-2xl mx-auto px-5"><h2 className="text-3xl md:text-4xl font-bold">Ready To Make Your Own Memories?</h2><p className="mt-3 text-white/85">Tell us your dates, group size and budget and we will plan your trip.</p><div className="mt-7 flex gap-4 justify-center flex-wrap"><Btn to="/contact">Book Your Stay</Btn><Btn href={wa()} alt>WhatsApp Us</Btn></div></div></section>;
 
 const About = () => <>
@@ -149,21 +160,43 @@ function Contact() {
     const send = e => { e.preventDefault(); setS('sending'); emailjs.sendForm(import.meta.env.VITE_EMAILJS_SERVICE_ID, import.meta.env.VITE_EMAILJS_TEMPLATE_ID, f.current, { publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY }).then(() => { setS('ok'); f.current.reset() }).catch(() => setS('err')) };
     const I = 'w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold';
     return <>
-    <Seo title="Contact & Book Your Stay" desc="Book your Kenya safari or holiday. WhatsApp 0719 200 522 or email doveglobal@gmail.com." />
-    <Hero 
-    title="Book Your Stay" 
-    sub="Tell us your dates, group size and budget and we will plan your trip."
-    crumbs={[{ label: 'Home', to: '/' }, { label: 'Contact' }]}
-    />
+        <Seo title="Contact & Book Your Stay" desc="Book your Kenya safari or holiday. WhatsApp 0719 200 522 or email doveglobal@gmail.com." />
+        <Hero
+            title="Book Your Stay"
+            sub="Tell us your dates, group size and budget and we will plan your trip."
+            crumbs={[{ label: 'Home', to: '/' }, { label: 'Contact' }]}
+        />
         <section id="book" className="max-w-6xl mx-auto px-5 py-20 grid lg:grid-cols-5 gap-10">
-            <div className="lg:col-span-2 space-y-5"><h2 className="text-3xl font-bold text-brand">Get In Touch</h2><a href={wa()} className="flex items-center gap-4 p-5 rounded-2xl bg-green-50 hover:shadow-lg"><span className="text-3xl">💬</span><span><b>WhatsApp</b><br />{PHONE}</span></a><a href={`mailto:${EMAIL}`} className="flex items-center gap-4 p-5 rounded-2xl bg-sand hover:shadow-lg"><span className="text-3xl">✉️</span><span><b>Email</b><br />{EMAIL}</span></a><p className="text-sm text-gray-600">We reply within a few hours, every day.</p></div>
+            <div className="lg:col-span-2 space-y-5">
+                <h2 className="text-3xl font-bold text-brand">Get In Touch</h2>
+                <a href={wa()} className="flex items-center gap-4 p-5 rounded-2xl bg-green-50 hover:shadow-lg">
+                    <span className="text-3xl"> <MessageCircleMore /> </span>
+                    <span><b>WhatsApp</b>
+                        <br />{PHONE}</span></a>
+                <a href={`mailto:${EMAIL}`} className="flex items-center gap-4 p-5 rounded-2xl bg-sand hover:shadow-lg">
+                    <span className="text-3xl">✉️</span><span><b>Email</b><br />
+                        {EMAIL}</span></a>
+                <p className="text-sm text-gray-600">We reply within a few hours, every day.</p>
+            </div>
             <form ref={f} onSubmit={send} className="lg:col-span-3 bg-white p-8 rounded-2xl shadow-xl grid gap-4 sm:grid-cols-2">
-                <input name="name" required placeholder="Full name" className={I} /><input name="email" type="email" required placeholder="Email" className={I} />
-                <input name="phone" placeholder="Phone / WhatsApp" className={I} /><select name="service" className={I}>{services.map(x => <option key={x[0]}>{x[0]}</option>)}</select>
-                <input name="date" type="date" className={I} /><input name="guests" type="number" min="1" placeholder="Number of guests" className={I} />
+                <input
+                    name="name" required placeholder="Full name"
+                    className={I} />
+                <input name="email" type="email" required placeholder="Email" className={I} />
+                <input name="phone" placeholder="Phone / WhatsApp" className={I} />
+                <select name="service" className={I}>{services.map(x => <option key={x[0]}>{x[0]}</option>)}
+                </select>
+                <input name="date" type="date" className={I} />
+                <input name="guests" type="number" min="1" placeholder="Number of guests" className={I} />
                 <textarea name="message" rows="4" required placeholder="Tell us about your dream trip and budget" className={I + ' sm:col-span-2'} />
-                <button disabled={s === 'sending'} className="sm:col-span-2 bg-brand text-white py-3 rounded-full font-semibold hover:bg-emerald-800">{s === 'sending' ? 'Sending...' : 'Send Enquiry'}</button>
-                {s === 'ok' && <p className="sm:col-span-2 text-green-700">Thank you! We will contact you shortly.</p>}{s === 'err' && <p className="sm:col-span-2 text-red-600">Could not send. Please use WhatsApp instead.</p>}</form></section></>
+                <button disabled={s === 'sending'}
+                    className="sm:col-span-2 bg-brand text-white py-3 rounded-full font-semibold hover:bg-emerald-800">
+                    {s === 'sending' ? 'Sending...' : 'Send Enquiry'}</button>
+                {s === 'ok' && <p className="sm:col-span-2 text-green-700">Thank you! We will contact you shortly.</p>}{s === 'err' &&
+                    <p className="sm:col-span-2 text-red-600">Could not send. Please use WhatsApp instead.</p>}
+            </form>
+        </section>
+    </>
 }
 
 export default function App() {
