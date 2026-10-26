@@ -193,7 +193,7 @@ function Contact() {
                     className="sm:col-span-2 bg-brand text-white py-3 rounded-full font-semibold hover:bg-emerald-800">
                     {s === 'sending' ? 'Sending...' : 'Send Enquiry'}</button>
                 {s === 'ok' && <p className="sm:col-span-2 text-green-700">Thank you! We will contact you shortly.</p>}{s === 'err' &&
-                    <p className="sm:col-span-2 text-red-600">Could not send. Please use WhatsApp instead.</p>}
+                    <p className="sm:col-span-2 text-red-600">Could not send. Please Purchase this Web App to enable email Communication direct to your Gmail.</p>}
             </form>
         </section>
     </>
