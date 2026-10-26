@@ -1,0 +1,4 @@
+@import "tailwindcss";
+@theme{--color-brand:#0f5132;--color-gold:#d9a441;--color-sand:#faf6ee;--font-display:"Playfair Display",serif;}
+html{scroll-behavior:smooth}body{font-family:Inter,sans-serif;color:#1f2937}
+h1,h2,h3{font-family:var(--font-display)}
